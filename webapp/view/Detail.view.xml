@@ -1,0 +1,784 @@
+<mvc:View
+    controllerName="code.t1.paymentaprove.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:uxap="sap.uxap"
+    displayBlock="true">
+
+    <Page
+        id="detailPage"
+        showNavButton="false"
+        enableScrolling="false"
+        class="sapUiNoContentPadding">
+
+        <customHeader>
+            <Bar design="Header">
+                <contentLeft>
+                    <Title
+                        text="매입채무 지급 결재"
+                        level="H4"/>
+                </contentLeft>
+
+                <contentRight>
+                    <Button
+                        icon="sap-icon://nav-back"
+                        type="Transparent"
+                        press=".onNavBack"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+
+        <content>
+            <uxap:ObjectPageLayout
+                id="objectPageLayout"
+                showTitleInHeaderContent="true"
+                showAnchorBar="true"
+                useIconTabBar="false"
+                showFooter="{detailView>/IsRequest}"
+                upperCaseAnchorBar="false"
+                enableLazyLoading="false">
+
+                <uxap:headerTitle>
+                    <uxap:ObjectPageDynamicHeaderTitle>
+
+                        <uxap:expandedHeading>
+                            <VBox>
+                                <Title
+                                    text="{= ${ApvNo} ? '지급 결재 요청 ' + ${ApvNo} : '지급 결재 요청' }"
+                                    level="H2"/>
+
+                                <Text
+                                    text="{= ${Name1} ? ${Name1} + ' 매입채무 지급 승인 요청' : '매입채무 지급 승인 요청' }"/>
+                            </VBox>
+                        </uxap:expandedHeading>
+
+                        <uxap:snappedHeading>
+                            <VBox>
+                                <Title
+                                    text="{= ${ApvNo} ? '지급 결재 요청 ' + ${ApvNo} : '지급 결재 요청' }"
+                                    level="H3"/>
+
+                                <Text
+                                    text="{= ${Name1} ? ${Name1} : '공급업체 정보 없음' }"/>
+                            </VBox>
+                        </uxap:snappedHeading>
+
+                        <uxap:expandedContent>
+                            <HBox alignItems="Center">
+                                <ObjectStatus
+                                    title="결재상태"
+                                    text="{
+                                        path: 'ApvStat',
+                                        formatter: '.formatter.apvStatusText'
+                                    }"
+                                    state="{
+                                        path: 'ApvStat',
+                                        formatter: '.formatter.apvStatusState'
+                                    }"
+                                    inverted="true"
+                                    class="sapUiSmallMarginEnd"/>
+
+                                <VBox>
+                                    <Label text="계좌검토"/>
+                                    <Text text="{detailView>/AvailableText}"/>
+                                </VBox>
+                            </HBox>
+                        </uxap:expandedContent>
+
+                        <uxap:snappedContent>
+                            <HBox alignItems="Center">
+                                <ObjectStatus
+                                    text="{
+                                        path: 'ApvStat',
+                                        formatter: '.formatter.apvStatusText'
+                                    }"
+                                    state="{
+                                        path: 'ApvStat',
+                                        formatter: '.formatter.apvStatusState'
+                                    }"
+                                    inverted="true"
+                                    class="sapUiSmallMarginEnd"/>
+
+                                <Text text="{detailView>/AvailableText}"/>
+                            </HBox>
+                        </uxap:snappedContent>
+
+                        <uxap:actions>
+                            <Button
+                                text="지급 승인"
+                                type="Emphasized"
+                                icon="sap-icon://accept"
+                                visible="{detailView>/IsRequest}"
+                                enabled="{detailView>/CanApprove}"
+                                press=".onApprove"/>
+
+                            <Button
+                                text="반려"
+                                type="Reject"
+                                icon="sap-icon://decline"
+                                visible="{detailView>/IsRequest}"
+                                enabled="{detailView>/CanReject}"
+                                press=".onReject"/>
+                        </uxap:actions>
+
+                    </uxap:ObjectPageDynamicHeaderTitle>
+                </uxap:headerTitle>
+
+                <uxap:headerContent>
+                    <FlexBox
+                        wrap="Wrap"
+                        alignItems="Start"
+                        class="sapUiSmallMarginTop sapUiSmallMarginBottom">
+
+                        <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                            <Label text="공급업체"/>
+                            <ObjectIdentifier
+                                title="{Name1}"
+                                text="{Lifnr}"/>
+                        </VBox>
+
+                        <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                            <Label text="지급대상금액"/>
+                            <ObjectNumber
+                                number="{
+                                    parts: [
+                                        { path: 'Wrbtr' },
+                                        { path: 'Waers' }
+                                    ],
+                                    type: 'sap.ui.model.type.Currency',
+                                    formatOptions: {
+                                        showMeasure: false
+                                    }
+                                }"
+                                unit="{Waers}"
+                                emphasized="true"
+                                state="Information"/>
+                        </VBox>
+
+                        <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                            <Label text="지급기한"/>
+                            <Text
+                                text="{
+                                    path: 'DueDate',
+                                    type: 'sap.ui.model.odata.type.DateTime',
+                                    constraints: {
+                                        displayFormat: 'Date'
+                                    },
+                                    formatOptions: {
+                                        pattern: 'yyyy.MM.dd'
+                                    }
+                                }"/>
+                        </VBox>
+
+                        <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                            <Label text="승인 계좌"/>
+                            <ObjectIdentifier
+                                title="{detailView>/SelectedBankDisplayTitle}"
+                                text="{detailView>/SelectedBankDisplayText}"/>
+                        </VBox>
+
+                    </FlexBox>
+                </uxap:headerContent>
+
+                <uxap:sections>
+
+                    <uxap:ObjectPageSection
+                        id="decisionSection"
+                        title="결재 검토 요약">
+
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection
+                                id="decisionSubSection"
+                                title="결재 검토 요약">
+
+                                <uxap:blocks>
+                                    <VBox>
+
+                                        <MessageStrip
+                                            text="승인 전 공급업체, 지급금액, 지급기한, 지급계좌의 가용잔액을 확인하세요."
+                                            type="Information"
+                                            showIcon="true"
+                                            visible="{detailView>/IsRequest}"
+                                            class="sapUiSmallMarginBottom"/>
+
+                                        <MessageStrip
+                                            text="승인 완료된 결재입니다. 승인 당시 지정된 지급 계좌를 확인할 수 있습니다."
+                                            type="Information"
+                                            showIcon="true"
+                                            visible="{detailView>/IsApproved}"
+                                            class="sapUiSmallMarginBottom"/>
+
+                                        <MessageStrip
+                                            text="반려 처리된 결재입니다. 지급 검토 대상에서 제외됩니다."
+                                            type="Information"
+                                            showIcon="true"
+                                            visible="{detailView>/IsRejected}"
+                                            class="sapUiSmallMarginBottom"/>
+
+                                        <HBox wrap="Wrap">
+
+                                            <Panel
+                                                width="22rem"
+                                                expandable="false"
+                                                class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+
+                                                <headerToolbar>
+                                                    <Toolbar>
+                                                        <Title text="상신 정보"/>
+                                                    </Toolbar>
+                                                </headerToolbar>
+
+                                                <VBox class="sapUiSmallMargin">
+                                                    <Label text="상신자"/>
+                                                    <Text
+                                                        text="{= ${ReqId} ? ${ReqId} : '상신자 없음' }"
+                                                        class="sapUiTinyMarginBottom"/>
+
+                                                    <Label text="상신일"/>
+                                                    <Text
+                                                        text="{
+                                                            path: 'ReqDate',
+                                                            type: 'sap.ui.model.odata.type.DateTime',
+                                                            constraints: {
+                                                                displayFormat: 'Date'
+                                                            },
+                                                            formatOptions: {
+                                                                pattern: 'yyyy.MM.dd'
+                                                            }
+                                                        }"/>
+                                                </VBox>
+                                            </Panel>
+
+                                            <Panel
+                                                width="22rem"
+                                                expandable="false"
+                                                class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+
+                                                <headerToolbar>
+                                                    <Toolbar>
+                                                        <Title text="계좌 검토"/>
+                                                    </Toolbar>
+                                                </headerToolbar>
+
+                                                <VBox class="sapUiSmallMargin">
+                                                    <Label text="검토 상태"/>
+                                                    <Text
+                                                        text="{detailView>/AvailableText}"
+                                                        class="sapUiTinyMarginBottom"/>
+
+                                                    <Label text="지급 계좌"/>
+                                                    <Text text="{detailView>/SelectedBankShortText}"/>
+                                                </VBox>
+                                            </Panel>
+
+                                            <Panel
+                                                width="22rem"
+                                                expandable="false"
+                                                class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+
+                                                <headerToolbar>
+                                                    <Toolbar>
+                                                        <Title text="최종 처리"/>
+                                                    </Toolbar>
+                                                </headerToolbar>
+
+                                                <VBox class="sapUiSmallMargin">
+                                                    <Label text="결재상태"/>
+                                                    <Text
+                                                        text="{
+                                                            path: 'ApvStat',
+                                                            formatter: '.formatter.apvStatusText'
+                                                        }"
+                                                        class="sapUiTinyMarginBottom"/>
+
+                                                    <Label text="처리자"/>
+                                                    <Text text="{= ${ApprId} ? ${ApprId} : '처리 대기' }"/>
+                                                </VBox>
+                                            </Panel>
+
+                                        </HBox>
+
+                                    </VBox>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <uxap:ObjectPageSection
+                        id="paymentReviewSection"
+                        title="금액 및 계좌 확인"
+                        visible="{detailView>/ShowPaymentReview}">
+
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection
+                                id="paymentAmountSubSection"
+                                title="금액 및 계좌 확인">
+
+                                <uxap:blocks>
+                                    <VBox>
+
+                                        <HBox
+                                            wrap="Wrap"
+                                            class="sapUiSmallMarginBottom">
+
+                                            <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                                                <Label text="지급대상금액"/>
+                                                <ObjectNumber
+                                                    number="{
+                                                        parts: [
+                                                            { path: 'Wrbtr' },
+                                                            { path: 'Waers' }
+                                                        ],
+                                                        type: 'sap.ui.model.type.Currency',
+                                                        formatOptions: {
+                                                            showMeasure: false
+                                                        }
+                                                    }"
+                                                    unit="{Waers}"
+                                                    emphasized="true"
+                                                    state="Information"/>
+                                            </VBox>
+
+                                            <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                                                <Label text="실제잔액"/>
+                                                <ObjectNumber
+                                                    number="{
+                                                        parts: [
+                                                            { path: 'detailView>/SelectedBalanceAmt' },
+                                                            { path: 'detailView>/SelectedWaers' }
+                                                        ],
+                                                        type: 'sap.ui.model.type.Currency',
+                                                        formatOptions: {
+                                                            showMeasure: false
+                                                        }
+                                                    }"
+                                                    unit="{detailView>/SelectedWaers}"/>
+                                            </VBox>
+
+                                            <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                                                <Label text="지급예정금액"/>
+                                                <ObjectNumber
+                                                    number="{
+                                                        parts: [
+                                                            { path: 'detailView>/SelectedPlanOutAmt' },
+                                                            { path: 'detailView>/SelectedWaers' }
+                                                        ],
+                                                        type: 'sap.ui.model.type.Currency',
+                                                        formatOptions: {
+                                                            showMeasure: false
+                                                        }
+                                                    }"
+                                                    unit="{detailView>/SelectedWaers}"/>
+                                            </VBox>
+
+                                            <VBox class="sapUiLargeMarginEnd sapUiSmallMarginBottom">
+                                                <Label text="승인 가능 잔액"/>
+                                                <ObjectNumber
+                                                    number="{
+                                                        parts: [
+                                                            { path: 'detailView>/SelectedAvailableAmt' },
+                                                            { path: 'detailView>/SelectedWaers' }
+                                                        ],
+                                                        type: 'sap.ui.model.type.Currency',
+                                                        formatOptions: {
+                                                            showMeasure: false
+                                                        }
+                                                    }"
+                                                    unit="{detailView>/SelectedWaers}"
+                                                    emphasized="true"
+                                                    state="{detailView>/AvailableState}"/>
+                                            </VBox>
+
+                                        </HBox>
+
+                                        <Panel expandable="false">
+
+                                            <headerToolbar>
+                                                <Toolbar>
+                                                    <Title text="지급 계좌"/>
+                                                    <ToolbarSpacer/>
+                                                    <Button
+                                                        text="계좌 선택"
+                                                        type="Emphasized"
+                                                        icon="sap-icon://credit-card"
+                                                        visible="{detailView>/CanSelectBank}"
+                                                        enabled="{detailView>/CanSelectBank}"
+                                                        press=".onSelectBank"/>
+                                                </Toolbar>
+                                            </headerToolbar>
+
+                                            <form:SimpleForm
+                                                editable="false"
+                                                busy="{detailView>/BankInfoBusy}"
+                                                busyIndicatorDelay="0"
+                                                layout="ResponsiveGridLayout"
+                                                labelSpanXL="3"
+                                                labelSpanL="3"
+                                                labelSpanM="4"
+                                                labelSpanS="12"
+                                                adjustLabelSpan="false"
+                                                emptySpanXL="1"
+                                                emptySpanL="1"
+                                                emptySpanM="0"
+                                                emptySpanS="0"
+                                                columnsXL="2"
+                                                columnsL="2"
+                                                columnsM="1"
+                                                singleContainerFullSize="false">
+
+                                                <Label text="은행ID"/>
+                                                <Text text="{detailView>/SelectedBankId}"/>
+
+                                                <Label text="은행명"/>
+                                                <Text text="{detailView>/SelectedBankNm}"/>
+
+                                                <Label text="계좌번호"/>
+                                                <Text text="{detailView>/SelectedAccount}"/>
+
+                                                <Label text="통화"/>
+                                                <Text text="{detailView>/SelectedWaers}"/>
+
+                                                <Label text="검토 상태"/>
+                                                <Text text="{detailView>/AvailableText}"/>
+
+                                                <Label text="승인 가능 여부"/>
+                                                <Text text="{detailView>/ApprovalPossibleText}"/>
+
+                                            </form:SimpleForm>
+                                        </Panel>
+
+                                    </VBox>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <uxap:ObjectPageSection
+                        id="requestInfoSection"
+                        title="결재 요청 및 공급업체">
+
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection
+                                id="requestInfoSubSection"
+                                title="결재 요청 및 공급업체">
+
+                                <uxap:blocks>
+                                    <form:SimpleForm
+                                        editable="false"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="3"
+                                        labelSpanL="3"
+                                        labelSpanM="4"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="1"
+                                        emptySpanL="1"
+                                        emptySpanM="0"
+                                        emptySpanS="0"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1"
+                                        singleContainerFullSize="false">
+
+                                        <Label text="결재번호"/>
+                                        <Text text="{ApvNo}"/>
+
+                                        <Label text="결재상태"/>
+                                        <Text
+                                            text="{
+                                                path: 'ApvStat',
+                                                formatter: '.formatter.apvStatusText'
+                                            }"/>
+
+                                        <Label text="상신자"/>
+                                        <Text text="{ReqId}"/>
+
+                                        <Label text="상신일"/>
+                                        <Text
+                                            text="{
+                                                path: 'ReqDate',
+                                                type: 'sap.ui.model.odata.type.DateTime',
+                                                constraints: {
+                                                    displayFormat: 'Date'
+                                                },
+                                                formatOptions: {
+                                                    pattern: 'yyyy.MM.dd'
+                                                }
+                                            }"/>
+
+                                        <Label text="승인/반려자"/>
+                                        <Text text="{ApprId}"/>
+
+                                        <Label text="승인/반려일"/>
+                                        <Text
+                                            text="{
+                                                path: 'ApprDate',
+                                                type: 'sap.ui.model.odata.type.DateTime',
+                                                constraints: {
+                                                    displayFormat: 'Date'
+                                                },
+                                                formatOptions: {
+                                                    pattern: 'yyyy.MM.dd'
+                                                }
+                                            }"/>
+
+                                        <Label text="공급업체"/>
+                                        <ObjectIdentifier
+                                            title="{Name1}"
+                                            text="{Lifnr}"/>
+
+                                        <Label text="지급조건"/>
+                                        <Text text="{Zterm}"/>
+
+                                        <Label text="지급방법"/>
+                                        <Text text="{Zlsch}"/>
+
+                                        <Label text="지급기한"/>
+                                        <Text
+                                            text="{
+                                                path: 'DueDate',
+                                                type: 'sap.ui.model.odata.type.DateTime',
+                                                constraints: {
+                                                    displayFormat: 'Date'
+                                                },
+                                                formatOptions: {
+                                                    pattern: 'yyyy.MM.dd'
+                                                }
+                                            }"/>
+
+                                    </form:SimpleForm>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <uxap:ObjectPageSection
+                        id="rejectSection"
+                        title="반려 사유"
+                        visible="{detailView>/IsRejected}">
+
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection
+                                id="rejectSubSection"
+                                title="반려 사유">
+
+                                <uxap:blocks>
+                                    <Panel expandable="false">
+
+                                        <headerToolbar>
+                                            <Toolbar>
+                                                <Title text="반려 사유"/>
+                                            </Toolbar>
+                                        </headerToolbar>
+
+                                        <VBox class="sapUiSmallMargin">
+
+                                            <MessageStrip
+                                                text="해당 결재는 반려 처리되었습니다."
+                                                type="Information"
+                                                showIcon="true"
+                                                class="sapUiSmallMarginBottom"/>
+
+                                            <Label text="반려 사유"/>
+                                            <Text
+                                                text="{= ${RejRsn} ? ${RejRsn} : '등록된 반려 사유가 없습니다.' }"
+                                                wrapping="true"/>
+
+                                        </VBox>
+                                    </Panel>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                    <uxap:ObjectPageSection
+                        id="documentInfoSection"
+                        title="원전표 근거">
+
+                        <uxap:subSections>
+                            <uxap:ObjectPageSubSection
+                                id="documentHeaderSubSection"
+                                title="전표 헤더 및 라인">
+
+                                <uxap:blocks>
+                                    <Panel expandable="true" expanded="false">
+
+                                        <headerToolbar>
+                                            <Toolbar>
+                                                <Title text="전표 상세 정보"/>
+                                                <ToolbarSpacer/>
+                                                <ObjectStatus
+                                                    text="{= ${Belnr} ? '원전표 ' + ${Belnr} : '전표 없음' }"
+                                                    state="Information"
+                                                    inverted="true"/>
+                                            </Toolbar>
+                                        </headerToolbar>
+
+                                        <form:SimpleForm
+                                            editable="false"
+                                            layout="ResponsiveGridLayout"
+                                            labelSpanXL="3"
+                                            labelSpanL="3"
+                                            labelSpanM="4"
+                                            labelSpanS="12"
+                                            adjustLabelSpan="false"
+                                            emptySpanXL="1"
+                                            emptySpanL="1"
+                                            emptySpanM="0"
+                                            emptySpanS="0"
+                                            columnsXL="2"
+                                            columnsL="2"
+                                            columnsM="1"
+                                            singleContainerFullSize="false">
+
+                                            <Label text="회사코드"/>
+                                            <Text text="{Bukrs}"/>
+
+                                            <Label text="전표번호"/>
+                                            <Text text="{Belnr}"/>
+
+                                            <Label text="회계연도"/>
+                                            <Text text="{Gjahr}"/>
+
+                                            <Label text="라인번호"/>
+                                            <Text text="{Buzei}"/>
+
+                                            <Label text="전표유형"/>
+                                            <Text text="{Blart}"/>
+
+                                            <Label text="전기일"/>
+                                            <Text
+                                                text="{
+                                                    path: 'Budat',
+                                                    type: 'sap.ui.model.odata.type.DateTime',
+                                                    constraints: {
+                                                        displayFormat: 'Date'
+                                                    },
+                                                    formatOptions: {
+                                                        pattern: 'yyyy.MM.dd'
+                                                    }
+                                                }"/>
+
+                                            <Label text="헤더텍스트"/>
+                                            <Text text="{Bktxt}"/>
+
+                                            <Label text="참조문서키"/>
+                                            <Text text="{Awkey}"/>
+
+                                            <Label text="G/L 계정"/>
+                                            <Text text="{Hkont}"/>
+
+                                            <Label text="차/대변"/>
+                                            <Text text="{Shkzg}"/>
+
+                                            <Label text="전기키"/>
+                                            <Text text="{Bschl}"/>
+
+                                            <Label text="계정유형"/>
+                                            <Text text="{Koart}"/>
+
+                                            <Label text="거래금액"/>
+                                            <ObjectNumber
+                                                number="{
+                                                    parts: [
+                                                        { path: 'Wrbtr' },
+                                                        { path: 'Waers' }
+                                                    ],
+                                                    type: 'sap.ui.model.type.Currency',
+                                                    formatOptions: {
+                                                        showMeasure: true
+                                                    }
+                                                }"/>
+
+                                            <Label text="로컬통화금액"/>
+                                            <ObjectNumber
+                                                number="{
+                                                    parts: [
+                                                        { path: 'Dmbtr' },
+                                                        { path: 'Zwaers' }
+                                                    ],
+                                                    type: 'sap.ui.model.type.Currency',
+                                                    formatOptions: {
+                                                        showMeasure: true
+                                                    }
+                                                }"/>
+
+                                            <Label text="세금코드"/>
+                                            <Text text="{Mwskz}"/>
+
+                                            <Label text="공급가액"/>
+                                            <ObjectNumber
+                                                number="{
+                                                    parts: [
+                                                        { path: 'Hwbas' },
+                                                        { path: 'Waers' }
+                                                    ],
+                                                    type: 'sap.ui.model.type.Currency',
+                                                    formatOptions: {
+                                                        showMeasure: true
+                                                    }
+                                                }"/>
+
+                                            <Label text="세액"/>
+                                            <ObjectNumber
+                                                number="{
+                                                    parts: [
+                                                        { path: 'Mwsts' },
+                                                        { path: 'Waers' }
+                                                    ],
+                                                    type: 'sap.ui.model.type.Currency',
+                                                    formatOptions: {
+                                                        showMeasure: true
+                                                    }
+                                                }"/>
+
+                                            <Label text="아이템 텍스트"/>
+                                            <Text text="{Sgtxt}"/>
+
+                                            <Label text="자재문서번호"/>
+                                            <Text text="{Mblnr}"/>
+
+                                            <Label text="자재문서연도"/>
+                                            <Text text="{Mjahr}"/>
+
+                                        </form:SimpleForm>
+                                    </Panel>
+                                </uxap:blocks>
+                            </uxap:ObjectPageSubSection>
+                        </uxap:subSections>
+                    </uxap:ObjectPageSection>
+
+                </uxap:sections>
+
+                <uxap:footer>
+                    <OverflowToolbar>
+                        <ObjectStatus
+                            text="{detailView>/FooterText}"
+                            state="{detailView>/FooterState}"
+                            inverted="true"/>
+
+                        <ToolbarSpacer/>
+
+                        <Button
+                            text="지급 승인"
+                            type="Emphasized"
+                            icon="sap-icon://accept"
+                            visible="{detailView>/IsRequest}"
+                            enabled="{detailView>/CanApprove}"
+                            press=".onApprove"/>
+
+                        <Button
+                            text="반려"
+                            type="Reject"
+                            icon="sap-icon://decline"
+                            visible="{detailView>/IsRequest}"
+                            enabled="{detailView>/CanReject}"
+                            press=".onReject"/>
+                    </OverflowToolbar>
+                </uxap:footer>
+
+            </uxap:ObjectPageLayout>
+        </content>
+    </Page>
+</mvc:View>

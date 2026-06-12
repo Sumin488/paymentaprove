@@ -1,0 +1,4 @@
+models/faceapi/tiny_face_detector_model-shard1
+models/faceapi/face_landmark_68_model-shard1
+models/faceapi/face_recognition_model-shard1
+models/faceapi/face_recognition_model-shard2

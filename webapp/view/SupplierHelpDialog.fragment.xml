@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <SelectDialog
+        id="supplierHelpDialog"
+        title="공급업체 선택"
+        noDataText="조회된 공급업체가 없습니다."
+        growingThreshold="30"
+        search=".onSupplierHelpSearch"
+        confirm=".onSupplierHelpConfirm"
+        cancel=".onSupplierHelpCancel"
+        items="{supplierHelp>/items}">
+
+        <StandardListItem
+            title="{supplierHelp>Name1}"
+            description="{supplierHelp>Lifnr}"
+            type="Active"/>
+    </SelectDialog>
+</core:FragmentDefinition>

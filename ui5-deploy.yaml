@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "3.1"
+metadata:
+  name: code.t1.paymentaprove
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          url: http://61.97.134.36:8000
+          client: '100'
+        app:
+          name: ZUI5_D1_FI_0001
+          description: '[FI] 대금지급 결재 프로그램'
+          package: ZPD1FI
+          transport: EFXK902388
+        exclude:
+          - /test/

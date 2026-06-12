@@ -1,0 +1,129 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Dialog
+        id="bankDialog"
+        title="지급 계좌 선택"
+        contentWidth="95rem"
+        contentHeight="35rem"
+        resizable="true"
+        draggable="true">
+
+        <Table
+            id="bankTable"
+            mode="SingleSelectLeft"
+            growing="true"
+            growingThreshold="20"
+            busyIndicatorDelay="0"
+            noDataText="조회된 계좌가 없습니다."
+            items="{/PayApvBankBalSet}">
+
+            <columns>
+                <Column>
+                    <Text text="은행ID" />
+                </Column>
+
+                <Column>
+                    <Text text="은행명" />
+                </Column>
+
+                <Column>
+                    <Text text="계좌번호" />
+                </Column>
+
+                <Column>
+                    <Text text="G/L 계정" />
+                </Column>
+
+                <Column>
+                    <Text text="통화" />
+                </Column>
+
+                <Column hAlign="End">
+                    <Text text="실제잔액" />
+                </Column>
+
+                <Column hAlign="End">
+                    <Text text="지급예정금액" />
+                </Column>
+
+                <Column hAlign="End">
+                    <Text text="가용잔액" />
+                </Column>
+            </columns>
+
+            <items>
+                <ColumnListItem type="Active">
+                    <cells>
+                        <Text text="{BankId}" />
+                        <Text text="{BankNm}" />
+                        <Text text="{Account}" />
+                        <Text text="{Hkont}" />
+                        <Text text="{Waers}" />
+
+                        <ObjectNumber
+                            number="{
+                                parts: [
+                                    { path: 'BalanceAmt' },
+                                    { path: 'Waers' }
+                                ],
+                                type: 'sap.ui.model.type.Currency',
+                                formatOptions: {
+                                    showMeasure: false
+                                }
+                            }"
+                            unit="{Waers}" />
+
+                        <ObjectNumber
+                            number="{
+                                parts: [
+                                    { path: 'PlanOutAmt' },
+                                    { path: 'Waers' }
+                                ],
+                                type: 'sap.ui.model.type.Currency',
+                                formatOptions: {
+                                    showMeasure: false
+                                }
+                            }"
+                            unit="{Waers}" />
+
+                        <ObjectNumber
+                            number="{
+                                parts: [
+                                    { path: 'AvailableAmt' },
+                                    { path: 'Waers' }
+                                ],
+                                type: 'sap.ui.model.type.Currency',
+                                formatOptions: {
+                                    showMeasure: false
+                                }
+                            }"
+                            unit="{Waers}"
+                            state="{
+                                parts: [
+                                    {path: 'AvailableAmt'},
+                                    {path: 'CloseYn'},
+                                    {path: 'detailView>/PayAmount'}
+                                ],
+                                formatter: '.formatter.bankAvailableState'
+                            }" />
+                    </cells>
+                </ColumnListItem>
+            </items>
+        </Table>
+
+        <beginButton>
+            <Button
+                text="선택"
+                type="Emphasized"
+                press=".onConfirmBank" />
+        </beginButton>
+
+        <endButton>
+            <Button
+                text="취소"
+                press=".onCancelBankDialog" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

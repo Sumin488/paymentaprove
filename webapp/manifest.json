@@ -1,0 +1,155 @@
+{
+  "_version": "1.60.0",
+  "sap.app": {
+    "id": "code.t1.paymentaprove",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.19.3",
+      "toolsId": "392b5e93-b49c-4b43-8a2c-3b9168f23257"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZGWD1FI0001_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      },
+      "ZGWD1CM0001_SRV": {
+        "uri": "/sap/opu/odata/sap/ZGWD1CM0001_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/ZGWD1CM0001_SRV/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.120.23",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "code.t1.paymentaprove.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline",
+          "useBatch": false
+        }
+      },
+      "ZGWD1CM0001_SRV": {
+        "dataSource": "ZGWD1CM0001_SRV",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "type": "View",
+        "viewType": "XML",
+        "controlId": "app",
+        "controlAggregation": "pages",
+        "bypassed": {
+          "target": "TargetNotFound"
+        },
+        "async": true
+      },
+      "routes": [
+        {
+          "name": "RouteMain",
+          "pattern": "",
+          "target": "TargetMain"
+        },
+        {
+          "name": "RouteDetail",
+          "pattern": "detail/{ApvNo}/{Bukrs}/{Belnr}/{Gjahr}/{Buzei}",
+          "target": "TargetDetail"
+        },
+        {
+          "name": "RouteNotFound",
+          "pattern": "notFound",
+          "target": "TargetNotFound"
+        }
+      ],
+      "targets": {
+        "TargetMain": {
+          "id": "Main",
+          "name": "code.t1.paymentaprove.view.Main",
+          "controlAggregation": "pages",
+          "viewLevel": 1
+        },
+        "TargetDetail": {
+          "id": "Detail",
+          "name": "code.t1.paymentaprove.view.Detail",
+          "controlAggregation": "pages",
+          "viewLevel": 2
+        },
+        "TargetNotFound": {
+          "id": "NotFound",
+          "name": "code.t1.paymentaprove.view.NotFound",
+          "controlAggregation": "pages",
+          "viewLevel": 3
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "code.t1.paymentaprove.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<mvc:View
+    controllerName="code.t1.paymentaprove.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+
+    <!--
+        App.view.xml은 Worklist App의 Root View 역할만 한다.
+        sap.m.App은 NavContainer를 상속하며, 라우터가 페이지를 이 컨트롤의
+        pages 애그리게이션에 추가하고 화면 전환(navigate)을 처리한다.
+        manifest.json routing config의 controlId: "app" 과 id가 일치해야 한다.
+    -->
+    <App id="app"/>
+
+</mvc:View>

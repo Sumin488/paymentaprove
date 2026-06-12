@@ -1,0 +1,19 @@
+<mvc:View
+    controllerName="code.t1.paymentaprove.controller.NotFound"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+
+    <!--
+        라우터 bypassed 설정으로 매칭되지 않는 URL은 이 화면으로 이동한다.
+        또는 RouteNotFound(pattern: notFound)로 직접 이동하는 경우에도 표시된다.
+    -->
+    <MessagePage
+        id="notFoundPage"
+        title="페이지를 찾을 수 없습니다."
+        text="요청한 화면을 찾을 수 없습니다."
+        icon="sap-icon://documents"
+        showNavButton="true"
+        navButtonPress=".onNavBack"/>
+
+</mvc:View>

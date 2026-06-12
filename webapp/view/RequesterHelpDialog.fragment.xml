@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <SelectDialog
+        id="requesterHelpDialog"
+        title="상신자 선택"
+        noDataText="조회된 상신자가 없습니다."
+        growingThreshold="30"
+        search=".onRequesterHelpSearch"
+        confirm=".onRequesterHelpConfirm"
+        cancel=".onRequesterHelpCancel"
+        items="{requesterHelp>/items}">
+
+        <StandardListItem
+            title="{requesterHelp>ReqId}"
+            description="상신자"
+            type="Active"/>
+    </SelectDialog>
+</core:FragmentDefinition>

@@ -1,0 +1,320 @@
+<mvc:View
+    controllerName="code.t1.paymentaprove.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:fb="sap.ui.comp.filterbar"
+    displayBlock="true">
+
+    <mvc:dependents>
+        <ViewSettingsDialog
+            id="viewSettingsDialog"
+            confirm=".onConfirmViewSettings">
+
+            <sortItems>
+                <ViewSettingsItem key="DueDate" text="지급기한" selected="true"/>
+                <ViewSettingsItem key="ReqDate" text="상신일"/>
+                <ViewSettingsItem key="Wrbtr" text="거래금액"/>
+                <ViewSettingsItem key="Name1" text="공급업체명"/>
+                <ViewSettingsItem key="ApvNo" text="결재번호"/>
+            </sortItems>
+        </ViewSettingsDialog>
+    </mvc:dependents>
+
+    <Page
+        id="listPage"
+        title="매입채무 지급 결재"
+        showNavButton="false">
+
+        <content>
+            <IconTabBar
+                id="iconTabBar"
+                selectedKey="{worklistView>/quickFilterKey}"
+                select=".onQuickFilter"
+                expandable="false"
+                backgroundDesign="Transparent">
+
+                <items>
+                    <IconTabFilter
+                        key="ALL"
+                        showAll="true"
+                        count="{worklistView>/countAll}"
+                        text="전체"/>
+
+                    <IconTabSeparator/>
+
+                    <IconTabFilter
+                        key="REQ"
+                        icon="sap-icon://message-warning"
+                        iconColor="Critical"
+                        count="{worklistView>/countReq}"
+                        text="상신중"/>
+
+                    <IconTabFilter
+                        key="APR"
+                        icon="sap-icon://message-success"
+                        iconColor="Positive"
+                        count="{worklistView>/countApr}"
+                        text="승인"/>
+
+                    <IconTabFilter
+                        key="REJ"
+                        icon="sap-icon://message-error"
+                        iconColor="Negative"
+                        count="{worklistView>/countRej}"
+                        text="반려"/>
+                </items>
+
+                <content>
+                    <VBox>
+
+                        <fb:FilterBar
+                            id="filterBar"
+                            useToolbar="true"
+                            showGoOnFB="true"
+                            showClearOnFB="true"
+                            showFilterConfiguration="false"
+                            filterBarExpanded="true"
+                            search=".onFilterSearch"
+                            clear=".onFilterClear"
+                            class="sapUiSmallMarginBottom">
+
+                            <fb:filterGroupItems>
+
+                                <fb:FilterGroupItem
+                                    name="ApvNo"
+                                    label="결재번호"
+                                    groupName="Basic"
+                                    visibleInFilterBar="true">
+                                    <fb:control>
+                                        <MultiInput
+                                            id="filterApvNo"
+                                            width="32rem"
+                                            placeholder="결재번호 입력 또는 선택"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onApvNoValueHelp"
+                                            submit=".onMultiInputSubmit"
+                                            tokenUpdate=".onTokenUpdate"/>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                                <fb:FilterGroupItem
+                                    name="Belnr"
+                                    label="전표번호"
+                                    groupName="Basic"
+                                    visibleInFilterBar="true">
+                                    <fb:control>
+                                        <MultiInput
+                                            id="filterBelnr"
+                                            width="32rem"
+                                            placeholder="전표번호 입력 또는 선택"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onBelnrValueHelp"
+                                            submit=".onMultiInputSubmit"
+                                            tokenUpdate=".onTokenUpdate"/>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                                <fb:FilterGroupItem
+                                    name="Lifnr"
+                                    label="공급업체"
+                                    groupName="Basic"
+                                    visibleInFilterBar="true">
+                                    <fb:control>
+                                        <MultiInput
+                                            id="filterLifnr"
+                                            width="32rem"
+                                            placeholder="공급업체 입력 또는 선택"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onSupplierValueHelp"
+                                            submit=".onMultiInputSubmit"
+                                            tokenUpdate=".onTokenUpdate"/>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                                <fb:FilterGroupItem
+                                    name="ReqId"
+                                    label="상신자"
+                                    groupName="Basic"
+                                    visibleInFilterBar="true">
+                                    <fb:control>
+                                        <MultiInput
+                                            id="filterReqId"
+                                            width="24rem"
+                                            placeholder="상신자 입력 또는 선택"
+                                            showValueHelp="true"
+                                            valueHelpRequest=".onRequesterValueHelp"
+                                            submit=".onMultiInputSubmit"
+                                            tokenUpdate=".onTokenUpdate"/>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                                <fb:FilterGroupItem
+                                    name="DueDate"
+                                    label="지급기한"
+                                    groupName="Basic"
+                                    visibleInFilterBar="true">
+                                    <fb:control>
+                                        <DateRangeSelection
+                                            id="filterDueDate"
+                                            width="20rem"
+                                            displayFormat="yyyy.MM.dd"
+                                            delimiter=" ~ "
+                                            change=".onDateRangeChange"/>
+                                    </fb:control>
+                                </fb:FilterGroupItem>
+
+                            </fb:filterGroupItems>
+                        </fb:FilterBar>
+
+                        <Table
+                            id="listTable"
+                            items="{
+                                path: '/PayApvListSet',
+                                parameters: {
+                                    operationMode: 'Server'
+                                }
+                            }"
+                            mode="None"
+                            itemPress=".onItemPress"
+                            updateFinished=".onUpdateFinished"
+                            growing="true"
+                            growingThreshold="20"
+                            busyIndicatorDelay="0"
+                            noDataText="{worklistView>/noDataText}">
+
+                            <headerToolbar>
+                                <Toolbar>
+                                    <Title
+                                        id="listTitle"
+                                        text="결재 목록"/>
+
+                                    <ToolbarSpacer/>
+
+                                    <Button
+                                        icon="sap-icon://refresh"
+                                        tooltip="새로고침"
+                                        press=".onRefresh"/>
+
+                                    <Button
+                                        icon="sap-icon://view-settings"
+                                        tooltip="정렬"
+                                        press=".onOpenViewSettings"/>
+                                </Toolbar>
+                            </headerToolbar>
+
+                            <columns>
+                                <Column>
+                                    <Text text="결재번호"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="회사코드"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="원전표번호"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="회계연도"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="공급업체"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="공급업체명"/>
+                                </Column>
+
+                                <Column hAlign="End">
+                                    <Text text="지급대상금액"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="지급기한"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="상신자"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="상신일"/>
+                                </Column>
+
+                                <Column>
+                                    <Text text="결재상태"/>
+                                </Column>
+                            </columns>
+
+                            <items>
+                                <ColumnListItem type="Navigation">
+                                    <cells>
+                                        <Text text="{ApvNo}"/>
+                                        <Text text="{Bukrs}"/>
+                                        <Text text="{Belnr}"/>
+                                        <Text text="{Gjahr}"/>
+                                        <Text text="{Lifnr}"/>
+                                        <Text text="{Name1}"/>
+
+                                        <ObjectNumber
+                                            number="{
+                                                parts: [
+                                                    { path: 'Wrbtr' },
+                                                    { path: 'Waers' }
+                                                ],
+                                                type: 'sap.ui.model.type.Currency',
+                                                formatOptions: {
+                                                    showMeasure: false
+                                                }
+                                            }"
+                                            unit="{Waers}"/>
+
+                                        <Text
+                                            text="{
+                                                path: 'DueDate',
+                                                type: 'sap.ui.model.odata.type.DateTime',
+                                                constraints: {
+                                                    displayFormat: 'Date'
+                                                },
+                                                formatOptions: {
+                                                    pattern: 'yyyy.MM.dd'
+                                                }
+                                            }"/>
+
+                                        <Text text="{ReqId}"/>
+
+                                        <Text
+                                            text="{
+                                                path: 'ReqDate',
+                                                type: 'sap.ui.model.odata.type.DateTime',
+                                                constraints: {
+                                                    displayFormat: 'Date'
+                                                },
+                                                formatOptions: {
+                                                    pattern: 'yyyy.MM.dd'
+                                                }
+                                            }"/>
+
+                                        <ObjectStatus
+                                            text="{
+                                                path: 'ApvStat',
+                                                formatter: '.formatter.apvStatusText'
+                                            }"
+                                            state="{
+                                                path: 'ApvStat',
+                                                formatter: '.formatter.apvStatusState'
+                                            }"
+                                            inverted="true"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+
+                    </VBox>
+                </content>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,53 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Dialog
+        id="rejectDialog"
+        title="반려 사유 입력"
+        contentWidth="35rem"
+        draggable="true"
+        resizable="true">
+
+        <content>
+            <VBox class="sapUiSmallMargin">
+
+                <MessageStrip
+                    text="결재 요청을 반려하려면 반려 사유를 입력하세요."
+                    type="Warning"
+                    showIcon="true"
+                    class="sapUiSmallMarginBottom"/>
+
+                <Label
+                    text="반려 사유"
+                    required="true"/>
+
+                <TextArea
+                    id="rejectDialogReasonArea"
+                    value="{detailView>/RejectDialogReason}"
+                    rows="5"
+                    width="100%"
+                    maxLength="255"
+                    placeholder="예: 지급 계좌 재검토 필요, 잔액 부족, 공급업체 정보 확인 필요 등"/>
+
+            </VBox>
+        </content>
+
+        <beginButton>
+            <Button
+                text="확인"
+                type="Emphasized"
+                icon="sap-icon://accept"
+                press=".onConfirmRejectDialog"/>
+        </beginButton>
+
+        <endButton>
+            <Button
+                text="취소"
+                type="Transparent"
+                icon="sap-icon://decline"
+                press=".onCancelRejectDialog"/>
+        </endButton>
+
+    </Dialog>
+</core:FragmentDefinition>

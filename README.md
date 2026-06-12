@@ -584,43 +584,6 @@ face-api.js 로드
 
 ---
 
-## 📷 이미지 파일 준비
-
-README의 이미지가 정상 표시되려면 프로젝트 최상위에 `images` 폴더를 만들고 아래 파일명을 맞춰야 합니다.
-
-```text
-images/
-├── project-cover.png
-├── screen-main.png
-├── screen-filter.png
-├── screen-detail-request.png
-├── screen-detail-approved.png
-├── screen-detail-rejected.png
-├── screen-bank-dialog.png
-├── screen-face-dialog.png
-├── screen-reject-dialog.png
-└── process-flow.png
-```
-
-각 이미지에 들어가면 좋은 화면은 다음과 같습니다.
-
-| 파일명                          | 추천 이미지              |
-| ---------------------------- | ------------------- |
-| `project-cover.png`          | 프로젝트 대표 커버 이미지      |
-| `screen-main.png`            | 결재 목록 전체 화면         |
-| `screen-filter.png`          | 검색 조건과 상태 탭이 보이는 화면 |
-| `screen-detail-request.png`  | 상신중 결재 상세 화면        |
-| `screen-detail-approved.png` | 승인 완료 결재 상세 화면      |
-| `screen-detail-rejected.png` | 반려 완료 결재 상세 화면      |
-| `screen-bank-dialog.png`     | 지급 계좌 선택 Dialog     |
-| `screen-face-dialog.png`     | 안면 인증 Dialog        |
-| `screen-reject-dialog.png`   | 반려 사유 입력 Dialog     |
-| `process-flow.png`           | 전체 처리 흐름도           |
-
-<br/>
-
----
-
 ## 🎯 개발 의도
 
 지급 결재는 단순히 승인 버튼을 누르는 업무가 아니라, 지급 계좌와 가용잔액을 확인한 뒤 처리되어야 하는 업무입니다.
